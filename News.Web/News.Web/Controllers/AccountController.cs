@@ -17,8 +17,22 @@ namespace News.Web.Controllers
         }
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody]RegisterViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            AppUser appUser = new AppUser()
+            {
+                Email = model.Email,
+                UserName=model.Email,
+                FirstName = model.FirstName,
+                SecondName = model.SecondName,
+                Photo = model.Photo,
+                Phone = model.Phone
+            };
+            var result = await _userManager.CreateAsync(appUser, model.Password);
             return Ok(new { token="Сало" });
         }
     }
