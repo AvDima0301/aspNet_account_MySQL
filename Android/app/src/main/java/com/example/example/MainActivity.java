@@ -7,21 +7,26 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textHead;
-    private EditText editTextData;
+    TextInputLayout textFieldEmail;
+    TextInputEditText txtEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textHead = findViewById(R.id.textHead);
-        editTextData = findViewById(R.id.editTextData);
+        textFieldEmail = findViewById(R.id.textFieldEmail);
+        txtEmail = findViewById(R.id.txtEmail);
     }
 
     public void handleClick(View view) {
-        String text = editTextData.getText().toString();
-        textHead.setText(text);
+        textFieldEmail.setError("");
+        if( txtEmail.getText().toString().equals(""))
+            textFieldEmail.setError("Вкажіть пошту");
+
     }
 }
