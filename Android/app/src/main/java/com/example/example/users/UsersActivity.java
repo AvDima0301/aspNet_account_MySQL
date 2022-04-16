@@ -7,9 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import com.example.example.R;
+import com.example.example.dto.UserDTO;
+import com.example.example.network.UsersService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UsersActivity extends AppCompatActivity {
 
@@ -24,17 +30,32 @@ public class UsersActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2,
                 LinearLayoutManager.VERTICAL, false));
-        List<UserDTO> userDTOS = new ArrayList<>();
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail("ss@gg.dd");
-        userDTO.setImage("/images/5xfqagws.mgd.jpeg");
-        userDTOS.add(userDTO);
+//        List<UserDTO> userDTOS = new ArrayList<>();
+//        UserDTO userDTO = new UserDTO();
+//        userDTO.setEmail("ss@gg.dd");
+//        userDTO.setImage("/images/5xfqagws.mgd.jpeg");
+//        userDTOS.add(userDTO);
+//
+//        UserDTO userDTO2 = new UserDTO();
+//        userDTO2.setEmail("dd@vv.dd");
+//        userDTO2.setImage("/images/bzj0kmx0.rig.jpeg");
+//        userDTOS.add(userDTO2);
 
-        UserDTO userDTO2 = new UserDTO();
-        userDTO2.setEmail("dd@vv.dd");
-        userDTO2.setImage("/images/bzj0kmx0.rig.jpeg");
-        userDTOS.add(userDTO2);
-        adapter=new UserAdapter(userDTOS);
-        recyclerView.setAdapter(adapter);
+        UsersService.getInstance()
+                .jsonApi()
+                .users()
+                .enqueue(new Callback<List<UserDTO>>() {
+                    @Override
+                    public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> response) {
+                        adapter=new UserAdapter(response.body());
+                        recyclerView.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<UserDTO>> call, Throwable t) {
+
+                    }
+                });
+
     }
 }

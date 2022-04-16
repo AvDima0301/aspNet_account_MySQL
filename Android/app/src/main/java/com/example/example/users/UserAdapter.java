@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.example.R;
 import com.example.example.application.HomeApplication;
 import com.example.example.constants.Urls;
+import com.example.example.dto.UserDTO;
 
 import java.util.List;
 
@@ -36,11 +37,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserCardViewHolder> {
        if(users!=null && position<users.size()) {
            UserDTO user = users.get(position);
            holder.useremail.setText(user.getEmail());
-           String url = Urls.BASE+user.getImage();
+           String url = Urls.BASE+user.getPhoto();
            Glide.with(HomeApplication.getAppContext())
                    .load(url)
                    //.circleCrop()
-                   .apply(new RequestOptions().override(600, 300))
+                   .apply(new RequestOptions().override(600, 400))
                    .into(holder.userimg);
        }
     }

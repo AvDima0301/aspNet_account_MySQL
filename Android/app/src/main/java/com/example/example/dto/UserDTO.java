@@ -1,9 +1,9 @@
-package com.example.example.users;
+package com.example.example.dto;
 
 import lombok.Data;
 
 @Data
 public class UserDTO {
-    private String image;
+    private String photo;
     private String email;
 }
