@@ -44,6 +44,7 @@ namespace News.Web.Controllers
         [Route("users")]
         public async Task<IActionResult> Users()
         {
+            Thread.Sleep(2000);
             var list = _context.Users.Select(x => _mapper.Map<UserItemViewModel>(x)).ToList();
 
             return Ok(list);
