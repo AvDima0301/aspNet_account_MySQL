@@ -3,36 +3,137 @@ package com.example.example;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.example.constants.TextInputHelper;
+import com.example.example.constants.Validator;
+import com.example.example.dto.AccountResponseDTO;
+import com.example.example.dto.RegisterDTO;
+import com.example.example.network.UsersService;
 import com.example.example.users.UsersActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
-    TextInputLayout textFieldEmail;
-    TextInputEditText txtEmail;
+    TextInputHelper email;
+    TextInputHelper firstName;
+    TextInputHelper secondName;
+    TextInputHelper phone;
+    TextInputHelper password;
+    TextInputHelper confirmPassword;
+
+    private ImageView myImage;
+    int SELECT_PICTURE = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textFieldEmail = findViewById(R.id.textFieldEmail);
-        txtEmail = findViewById(R.id.txtEmail);
+        email = new TextInputHelper(findViewById(R.id.email), findViewById(R.id.txtEmail));
+        firstName = new TextInputHelper(findViewById(R.id.firstName), findViewById(R.id.txtFirstName));
+        secondName = new TextInputHelper(findViewById(R.id.secondName), findViewById(R.id.txtSecondName));
+        phone = new TextInputHelper(findViewById(R.id.phone), findViewById(R.id.txtPhone));
+        password = new TextInputHelper(findViewById(R.id.password), findViewById(R.id.txtPassword));
+        confirmPassword = new TextInputHelper(findViewById(R.id.confirmPassword), findViewById(R.id.txtConfirmPassword));
+
+        myImage = findViewById(R.id.myimg);
     }
 
+    String photoBase64 = "";
+
     public void handleClick(View view) {
-        textFieldEmail.setError("");
-        if( txtEmail.getText().toString().equals(""))
-            textFieldEmail.setError("Вкажіть пошту");
+        boolean validData = true;
+
+        if (!Validator.emailValidate(email.editText.getText().toString())) {
+            email.layout.setError("Вкажіть пошту правильно");
+            validData = false;
+        } else email.layout.setError(null);
+
+        if (!Validator.phoneNumberValidate(phone.editText.getText().toString())) {
+            phone.layout.setError("Вкажіть номер телефону правильно");
+            validData = false;
+        } else phone.layout.setError(null);
+
+        String password = this.password.editText.getText().toString();
+        String confirmPassword = this.confirmPassword.editText.getText().toString();
+
+        if (password.isEmpty()) {
+            this.confirmPassword.layout.setError(null);
+            this.password.layout.setError("Введіть пароль");
+            validData = false;
+        } else if (confirmPassword.isEmpty()) {
+            this.password.layout.setError(null);
+            this.confirmPassword.layout.setError("Підтвердіть пароль");
+            validData = false;
+        } else if (!Validator.passwordEqual(password, confirmPassword)) {
+            this.password.layout.setError("Паролі повинні збігатися");
+            this.confirmPassword.layout.setError("Паролі повинні збігатися");
+            validData = false;
+        } else {
+            this.password.layout.setError(null);
+            this.confirmPassword.layout.setError(null);
+        }
+
+
+        if (!validData && photoBase64.isEmpty() &&
+                firstName.editText.getText().toString().isEmpty() &&
+                secondName.editText.getText().toString().isEmpty()) return;
+
+        RegisterDTO registerDTO = new RegisterDTO();
+
+        registerDTO.setEmail(email.editText.getText().toString());
+        registerDTO.setPhone(phone.editText.getText().toString());
+        registerDTO.setFirstName(firstName.editText.getText().toString());
+        registerDTO.setSecondName(secondName.editText.getText().toString());
+        registerDTO.setPhoto(photoBase64);
+        registerDTO.setPassword(password);
+        registerDTO.setConfirmPassword(confirmPassword);
+
+        UsersService.getInstance().jsonApi().register(registerDTO)
+                .enqueue(new Callback<AccountResponseDTO>() {
+                    @Override
+                    public void onResponse(Call<AccountResponseDTO> call, Response<AccountResponseDTO> response) {
+                        if(response.isSuccessful()) {
+                            AccountResponseDTO data = response.body();
+                        }
+                        else {
+                            try {
+                                String json = response.errorBody().string();
+                                int a=12;
+                            }
+                            catch(Exception ex) {
+
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AccountResponseDTO> call, Throwable t) {
+                        String str = t.toString();
+                        int a = 12;
+                    }
+                });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,5 +154,39 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    public void onSelectImage(View view) {
+        imageChooser();
+    }
+
+    void imageChooser() {
+        Intent i = new Intent();
+        i.setType("image/*");
+        i.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(Intent.createChooser(i, "Select Picture"), SELECT_PICTURE);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri uri = data.getData();
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] bytes = stream.toByteArray();
+                String sImage = Base64.encodeToString(bytes, Base64.DEFAULT);
+                photoBase64 = sImage;
+                myImage.setImageBitmap(bitmap);
+            }
+        }
     }
 }
