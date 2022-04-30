@@ -1,10 +1,13 @@
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using News.Web.Data;
 using News.Web.Data.Entities.Identity;
+using News.Web.Helpers;
 using News.Web.Mapper;
+using News.Web.Middleware;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +35,23 @@ builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContai
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
+
+// https://github.com/openiddict/openiddict-core/issues/518
+// And
+// https://github.com/aspnet/Docs/issues/2384#issuecomment-297980490
+var forwardOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+forwardOptions.KnownNetworks.Clear();
+forwardOptions.KnownProxies.Clear();
+
+app.UseForwardedHeaders(forwardOptions);
+
+//app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseCustomExceptionHandler();
+
+app.UseLoggerFile();
 
 app.SeedData();
 
