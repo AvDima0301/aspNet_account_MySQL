@@ -5,6 +5,7 @@ using Microsoft.Extensions.FileProviders;
 using News.Web.Data;
 using News.Web.Data.Entities.Identity;
 using News.Web.Mapper;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,9 +29,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Program>());
-builder.Services.AddAutoMapper(typeof(AppMapProfile));
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
+
+app.SeedData();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
