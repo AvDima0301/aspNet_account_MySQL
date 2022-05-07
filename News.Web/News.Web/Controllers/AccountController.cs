@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using News.Web.Data;
 using News.Web.Data.Entities.Identity;
 using News.Web.Helpers;
 using News.Web.Models;
+using News.Web.Services;
 using System.Drawing.Imaging;
 
 namespace News.Web.Controllers
@@ -16,12 +18,15 @@ namespace News.Web.Controllers
     {
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
+        private readonly JwtTokenService _tokenService;
         private readonly AppEFContext _context;
-        public AccountController(UserManager<AppUser> userManager, IMapper mapper, AppEFContext context)
+        public AccountController(UserManager<AppUser> userManager, IMapper mapper, AppEFContext context,
+            JwtTokenService tokenService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _context = context;
+            _tokenService = tokenService;
         }
         [HttpPost]
         [Route("register")]
@@ -37,14 +42,15 @@ namespace News.Web.Controllers
 
             if (!result.Succeeded)
                 return BadRequest(new { errors = result.Errors });
-            return Ok(new { id=user.Id });
+            return Ok(new { token=_tokenService.CreateToken(user) });
         }
 
         [HttpGet]
+        [Authorize]
         [Route("users")]
         public async Task<IActionResult> Users()
         {
-            throw new AppException("Problem server get users");
+            //throw new AppException("Problem server get users");
             Thread.Sleep(2000);
             var list = _context.Users.Select(x => _mapper.Map<UserItemViewModel>(x)).ToList();
 

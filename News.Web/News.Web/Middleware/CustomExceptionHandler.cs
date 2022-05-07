@@ -27,6 +27,9 @@ namespace News.Web.Middleware
                     case AppException e:
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         break;
+                    //case UnauthorizedAccessException e:
+                    //    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    //    break;
                     case KeyNotFoundException e:
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
