@@ -6,12 +6,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.TextView;
+
 import com.example.example.R;
 import com.example.example.dto.UserDTO;
 import com.example.example.network.UsersService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,21 +45,23 @@ public class UsersActivity extends AppCompatActivity {
 //        userDTO2.setImage("/images/bzj0kmx0.rig.jpeg");
 //        userDTOS.add(userDTO2);
 
-        UsersService.getInstance()
-                .jsonApi()
-                .users()
-                .enqueue(new Callback<List<UserDTO>>() {
-                    @Override
-                    public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> response) {
-                        adapter=new UserAdapter(response.body());
-                        recyclerView.setAdapter(adapter);
-                    }
+        if(UsersService.getInstance().isTokenEmpty() != true) {
+            UsersService.getInstance()
+                    .jsonApi()
+                    .users(UsersService.getInstance().getToken())
+                    .enqueue(new Callback<List<UserDTO>>() {
+                        @Override
+                        public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> response) {
+                            adapter = new UserAdapter(response.body());
+                            recyclerView.setAdapter(adapter);
+                        }
 
-                    @Override
-                    public void onFailure(Call<List<UserDTO>> call, Throwable t) {
+                        @Override
+                        public void onFailure(Call<List<UserDTO>> call, Throwable t) {
 
-                    }
-                });
+                        }
+                    });
+        }
 
     }
 }

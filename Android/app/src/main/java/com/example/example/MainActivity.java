@@ -21,6 +21,7 @@ import com.example.example.constants.Validator;
 import com.example.example.dto.AccountResponseDTO;
 import com.example.example.dto.RegisterDTO;
 import com.example.example.network.UsersService;
+import com.example.example.users.Login;
 import com.example.example.users.UsersActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -150,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this, UsersActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.m_login:
+                intent = new Intent(this, Login.class);
+                startActivity(intent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -26,4 +26,10 @@
         app:layout_constraintTop_toBottomOf="@+id/textView"
         tools:layout_editor_absoluteX="0dp" />
 
+    <TextView
+        android:id="@+id/token"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:ignore="MissingConstraints"></TextView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

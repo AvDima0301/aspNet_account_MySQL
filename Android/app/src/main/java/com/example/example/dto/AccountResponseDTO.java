@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class AccountResponseDTO {
-    private int id;
+    private String token;
 }
