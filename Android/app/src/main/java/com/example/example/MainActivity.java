@@ -33,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     TextInputHelper email;
     TextInputHelper firstName;
@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<AccountResponseDTO> call, Response<AccountResponseDTO> response) {
                         if(response.isSuccessful()) {
                             AccountResponseDTO data = response.body();
+                            Intent intent = new Intent(getApplicationContext(), Login.class);
+                            startActivity(intent);
                         }
                         else {
                             try {
@@ -136,31 +138,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.m_users:
-                intent = new Intent(this, UsersActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.m_login:
-                intent = new Intent(this, Login.class);
-                startActivity(intent);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        Intent intent;
+//        switch (item.getItemId()) {
+//            case R.id.m_users:
+//                intent = new Intent(this, UsersActivity.class);
+//                startActivity(intent);
+//                return true;
+//            case R.id.m_login:
+//                intent = new Intent(this, Login.class);
+//                startActivity(intent);
+//                return true;
+//
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//
+//    }
 
     public void onSelectImage(View view) {
         imageChooser();

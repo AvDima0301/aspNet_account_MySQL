@@ -17,7 +17,7 @@ public interface UsersApi {
     @POST("/api/account/register")
     public Call<AccountResponseDTO> register(@Body RegisterDTO model);
     @GET("/api/account/users")
-    public Call<List<UserDTO>> users(@Header("Authorization") String authHeader);
+    public Call<List<UserDTO>> users();
     @POST("/api/account/login")
     public Call<AccountResponseDTO> login(@Body LoginDTO model);
 }

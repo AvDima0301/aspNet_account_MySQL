@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.example.BaseActivity;
 import com.example.example.R;
+import com.example.example.application.HomeApplication;
 import com.example.example.constants.TextInputHelper;
 import com.example.example.constants.Validator;
 import com.example.example.dto.AccountResponseDTO;
 import com.example.example.dto.LoginDTO;
+import com.example.example.network.TokenService;
 import com.example.example.network.UsersService;
 
 import java.io.IOException;
@@ -20,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Login extends Activity {
+public class Login extends BaseActivity {
 
     TextInputHelper email;
     TextInputHelper password;
@@ -63,7 +66,8 @@ public class Login extends Activity {
                         if(response.isSuccessful()) {
                             AccountResponseDTO data = response.body();
                             if(!data.getToken().isEmpty()) {
-                                UsersService.getInstance().setToken(data.getToken());
+                                TokenService tService = (TokenService) HomeApplication.getInstance();
+                                tService.saveJwtToken(data.getToken());
                                 Intent intent = new Intent(getApplicationContext(), UsersActivity.class);
                                 startActivity(intent);
                             }
@@ -74,7 +78,7 @@ public class Login extends Activity {
                                 int a=12;
                             }
                             catch(Exception ex) {
-
+                                System.out.println("------Error response parse body-----");
                             }
                         }
                     }

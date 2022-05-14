@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.example.example.BaseActivity;
 import com.example.example.R;
 import com.example.example.dto.UserDTO;
 import com.example.example.network.UsersService;
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UsersActivity extends AppCompatActivity {
+public class UsersActivity extends BaseActivity {
 
     private UserAdapter adapter;
     private RecyclerView recyclerView;
@@ -44,16 +45,16 @@ public class UsersActivity extends AppCompatActivity {
 //        userDTO2.setEmail("dd@vv.dd");
 //        userDTO2.setImage("/images/bzj0kmx0.rig.jpeg");
 //        userDTOS.add(userDTO2);
-
-        if(UsersService.getInstance().isTokenEmpty() != true) {
             UsersService.getInstance()
                     .jsonApi()
-                    .users(UsersService.getInstance().getToken())
+                    .users()
                     .enqueue(new Callback<List<UserDTO>>() {
                         @Override
                         public void onResponse(Call<List<UserDTO>> call, Response<List<UserDTO>> response) {
-                            adapter = new UserAdapter(response.body());
-                            recyclerView.setAdapter(adapter);
+                           if(response.isSuccessful()) {
+                               adapter = new UserAdapter(response.body());
+                               recyclerView.setAdapter(adapter);
+                           }
                         }
 
                         @Override
@@ -61,7 +62,5 @@ public class UsersActivity extends AppCompatActivity {
 
                         }
                     });
-        }
-
     }
 }
